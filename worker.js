@@ -70,6 +70,27 @@ export default {
       }
     }
 
+    if (url.pathname === '/resolve') {
+      const targetUrl = url.searchParams.get('url');
+      if (!targetUrl) return jsonError('Missing url param', 400);
+      try {
+        const resp = await fetch(targetUrl, {
+          headers: {
+            'User-Agent': 'web:RedVerifierV3:v1.0 (by /u/RedVerifier)',
+          },
+          redirect: 'follow',
+        });
+        return new Response(JSON.stringify({ url: resp.url }), {
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+        });
+      } catch (e) {
+        return jsonError(`Resolve failed: ${e.message}`, 502);
+      }
+    }
+
     if (url.pathname === '/health') {
       return new Response(JSON.stringify({ status: 'ok' }), {
         headers: {

@@ -1022,12 +1022,11 @@ Return a JSON array with one evaluation per claim, in the same order as presente
     async function resolveShareLink(url) {
       const config = getConfig();
       try {
-        const proxyUrl = `${config.workerUrl}/reddit?url=${encodeURIComponent(url + '.json')}`;
+        const proxyUrl = `${config.workerUrl}/resolve?url=${encodeURIComponent(url)}`;
         const resp = await fetch(proxyUrl);
         if (resp.ok) {
           const data = await resp.json();
-          const postId = data[0]?.data?.children?.[0]?.data?.id;
-          if (postId) return `https://www.reddit.com/comments/${postId}/`;
+          if (data.url && data.url.includes('/comments/')) return data.url;
         }
       } catch (_) { /* fall through */ }
       throw new Error(
